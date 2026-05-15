@@ -268,16 +268,16 @@ of the original DQN architecture.
 scalar value $V(s)$ and an 11-vector advantage $A(s, \cdot)$. The output
 is recombined as
 
-$$Q(s, a) \;=\; V(s) \;+\; \Bigl(A(s, a) \;-\; \tfrac{1}{|\mathcal{A}|}\textstyle\sum_{a'} A(s, a')\Bigr).$$
+$$Q(s, a) = V(s) + \left(A(s, a) - \frac{1}{|\mathcal{A}|}\sum_{a'} A(s, a')\right).$$
 
 Trunk: 3 hidden layers of 128 units, LayerNorm, ReLU, Kaiming init.
 
 **Double DQN target**. The online network selects the next action; the
 target network evaluates it:
 
-$$a^{*} \;=\; \arg\max_{a'} \, Q_{\text{online}}(s', a'; \theta),$$
+$$a^{*} = \arg\max_{a'} Q_{\text{online}}(s', a'; \theta),$$
 
-$$y \;=\; r \;+\; \gamma \, Q_{\text{target}}(s', a^{*}; \theta^{-}).$$
+$$y = r + \gamma \cdot Q_{\text{target}}(s', a^{*}; \theta^{-}).$$
 
 The target net is a Polyak-averaged copy of the online net
 ($\tau = 0.005$ per gradient step).
@@ -285,12 +285,12 @@ The target net is a Polyak-averaged copy of the online net
 **Prioritised Experience Replay** (`agent/replay.py`). A sum-tree of
 capacity 50,000 stores transitions with priority
 
-$$p_i \;=\; \bigl(|\delta_i| + \varepsilon\bigr)^{\alpha},$$
+$$p_i = \left(|\delta_i| + \varepsilon\right)^{\alpha},$$
 
 where $\delta_i$ is the TD-error of transition $i$. Importance sampling
 corrects for the non-uniform sampling with weights
 
-$$w_i \;=\; \Bigl(N \cdot \dfrac{p_i}{\sum_j p_j}\Bigr)^{-\beta},$$
+$$w_i = \left(N \cdot \frac{p_i}{\sum_j p_j}\right)^{-\beta},$$
 
 and $\beta$ is annealed from 0.4 to 1.0 across training.
 
@@ -298,7 +298,7 @@ and $\beta$ is annealed from 0.4 to 1.0 across training.
 consecutive transitions and writes a single compound experience with
 return
 
-$$R^{(3)}_t \;=\; r_t \;+\; \gamma \, r_{t+1} \;+\; \gamma^{2} \, r_{t+2}$$
+$$R^{(3)}_t = r_t + \gamma \cdot r_{t+1} + \gamma^{2} \cdot r_{t+2}$$
 
 and the state three steps ahead. This trades a small amount of bias for
 noticeably better signal-to-noise on the gradient.
